@@ -585,4 +585,24 @@ def stuck (case_name, file_ext):
     plt.savefig('adiabatic back.png', dpi = 300)
     # plt.show()
 
+def listfile(folders, file):
+    allFileList = []
+    listOfFileList = []
+    for folder in folders:
+        fileList = [name for name in os.listdir(folder) if name.endswith(file)]
+        fileList.sort()
+        listOfFileList.append(fileList)
+        allFileList = allFileList + fileList
+    return (listOfFileList, allFileList)
 
+def find_in_list_of_list(mylist, char):
+    for sub_list in mylist:
+        if char in sub_list:
+            return (mylist.index(sub_list), sub_list.index(char))
+    raise ValueError("'{char}' is not in list".format(char = char))
+    
+def fast_scandir(dirname):
+    subfolders= [f.path for f in os.scandir(dirname) if f.is_dir()]
+    for dirname in list(subfolders):
+        subfolders.extend(fast_scandir(dirname))
+    return subfolders

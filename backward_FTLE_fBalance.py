@@ -9,25 +9,33 @@ Created on Fri Aug 12 14:18:40 2022
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.interpolate import griddata
-from NEK5000_func_lib import particleCoordsAndVel
+from NEK5000_func_lib import particleCoordsAndVel, fast_scandir, listfile, find_in_list_of_list
 from os import walk
 import time
 startTime = time.time()
 
+# dirpath = '/Users/akimlavrinenko/Dropbox/My Mac (Akims-MacBook-Pro.local)/Documents/coding/data/test_data'
+# fold_name = 'fbala'
 
-path = '/Users/akimlavrinenko/Documents/coding/data/room_data/roomBackUp000002/'
+dirpath = '/Users/akimlavrinenko/Documents/coding/data/test_data/'
+fold_name = 'fbala'
+# dirpath = '/home/afabret/data/room_deposition/production_run/'
+# fold_name = 'roomBackUp'
 
-files = next(walk(path), (None, None, []))[2]  # [] if no file
-fileName = '.3D'
-filesList = [word for word in files if fileName in word]
+folders = fast_scandir(dirpath)
+folders = [word for word in folders if fold_name in word]
+folders.sort()
+
+listOfFileList, allFileList = listfile(folders,'.3D' )
+
+step = 1 # file step
+filesList = allFileList[0::step]
 filesList.sort()
 
 n = 0.01
 ps = 0
-fileStep = 1
 
-filesList = filesList[::fileStep]
-
+path = dirpath
 t0, a0 = particleCoordsAndVel (path, filesList[-1])
 
 xi = yi = np.arange(-0.5,0.5 + n,n)
