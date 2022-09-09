@@ -31,37 +31,39 @@ listOfFileList, allFileList = listfile(folders,'.3D' )
 step = 1 # file step
 filesList = allFileList[0::step]
 filesList.sort()
+print(len(filesList))
 
 n = 0.01
 ps = 0
 
 path = dirpath
-t0, a0 = particleCoordsAndVel (path, filesList[-1])
+t0, a0 = particleCoordsAndVel(folders[-1] + '/', allFileList[-1])
 
 xi = yi = np.arange(-0.5,0.5 + n,n)
 xi,yi = np.meshgrid(xi,yi)
 
 x = xi
 y = yi
-
-for file in reversed(range(0,len(filesList))):
-
-    t1, a1 = particleCoordsAndVel (path, filesList[file])
-    deltaT = np.round((t1 - t0), 3)
-    a01 = np.asarray(a1[ps])
-    ac1 = a01[:,0,:]
-    av1 = a01[:,1,:]
+for f in reversed(folders):
+    for file in reversed(range(0,len(filesList))):
+        print(f, file)
     
-    xv1 = griddata((ac1[:,0],ac1[:,1]),(av1[:,0]),(x, y),method='nearest')
-    yv1 = griddata((ac1[:,0],ac1[:,1]),(av1[:,1]),(x, y),method='nearest')
+        t1, a1 = particleCoordsAndVel (f + '/', filesList[file])
+        deltaT = np.round((t1 - t0), 3)
+        a01 = np.asarray(a1[ps])
+        ac1 = a01[:,0,:]
+        av1 = a01[:,1,:]
+        
+        xv1 = griddata((ac1[:,0],ac1[:,1]),(av1[:,0]),(x, y),method='nearest')
+        yv1 = griddata((ac1[:,0],ac1[:,1]),(av1[:,1]),(x, y),method='nearest')
+        
+        xp2int = np.full(np.shape(xi), deltaT)*xv1 + x
+        yp2int = np.full(np.shape(yi), deltaT)*yv1 + y
     
-    xp2int = np.full(np.shape(xi), deltaT)*xv1 + x
-    yp2int = np.full(np.shape(yi), deltaT)*yv1 + y
-
-    x = xp2int
-    y = yp2int
-    t = t1
-    print(t)
+        x = xp2int
+        y = yp2int
+        t = t1
+        print(t)
     
 FTLEArr = np.zeros((len(xi[:,0]),len(yi[0,:])))
 xy = np.asarray((x,y))
